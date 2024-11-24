@@ -1,0 +1,5 @@
+bind_addr = ":8099"
+log_level = "debug"
+
+[database]
+database_url = "host=192.168.253.229 dbname=wstbd user=pguser password=pgpassword sslmode=disable "
