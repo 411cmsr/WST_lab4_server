@@ -1,4 +1,4 @@
-package database_test
+package testdb
 
 import (
 	"WST_lab4_server/internal/database"
@@ -8,21 +8,20 @@ import (
 )
 
 func TestUserRepository_Create(t *testing.T) {
-	s, teardown := database.TestDatabase(t, databaseURL)
-	defer teardown("users")
 
-	u, err := s.User().Create(models.TestUser(t))
-	assert.NoError(t, err)
+	s := New()
+	u := models.TestUser(t)
+
+	assert.NoError(t, s.User().Create(u))
 	assert.NotNil(t, u)
 }
 
 func TestUserRepository_FindByEmail(t *testing.T) {
-	s, teardown := database.TestDatabase(t, databaseURL)
-	defer teardown("users")
+	s := New()
 
 	email := "user@example.com"
 	_, err := s.User().FindByEmail(email)
-	assert.Error(t, err)
+	assert.EqualError(t, err, database.ErrRecordNotFound.Error())
 
 	u := models.TestUser(t)
 	u.Email = email

@@ -1,4 +1,4 @@
-package database_test
+package sqldb_test
 
 import (
 	"os"
