@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="wstbd@localhost" uuid="ed3884fc-6e99-4fd6-8f75-0915a53916b0">
+    <data-source source="LOCAL" name="wstbd@192.168.253.229" uuid="4e0784ef-ffe7-4992-93e8-e019ebbb1a39">
       <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>
-      <jdbc-url>jdbc:postgresql://localhost:5432/wstbd</jdbc-url>
+      <jdbc-url>jdbc:postgresql://192.168.253.229:5432/wstbd</jdbc-url>
       <jdbc-additional-properties>
         <property name="com.intellij.clouds.kubernetes.db.host.port" />
         <property name="com.intellij.clouds.kubernetes.db.enabled" value="false" />
