@@ -24,9 +24,8 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	s := services.New(config)
-	if err := s.Run(); err != nil {
-		log.Fatal(err)
 
+	if err := services.Start(config); err != nil {
+		log.Fatal(err)
 	}
 }

@@ -27,6 +27,26 @@ func (r *UserRepository) Create(u *models.User) error {
 
 }
 
+func (r *UserRepository) Find(id int) (*models.User, error) {
+	u := &models.User{}
+	if err := r.database.db.QueryRow(
+		"SELECT id, email, encrypted_password FROM users WHERE id = $1",
+		id,
+	).Scan(
+		&u.ID,
+		&u.Email,
+		&u.EncryptedPassword,
+	); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, database.ErrRecordNotFound
+		}
+
+		return nil, err
+	}
+
+	return u, nil
+}
+
 func (r *UserRepository) FindByEmail(email string) (*models.User, error) {
 	u := &models.User{}
 	if err := r.database.db.QueryRow(
@@ -39,7 +59,7 @@ func (r *UserRepository) FindByEmail(email string) (*models.User, error) {
 	); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, database.ErrRecordNotFound
-			
+
 		}
 		return nil, err
 	}

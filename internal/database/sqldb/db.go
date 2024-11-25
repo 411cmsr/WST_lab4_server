@@ -1,6 +1,7 @@
 package sqldb
 
 import (
+	"WST_lab4_server/internal/database"
 	//"WST_lab4_server/internal/database"
 	"database/sql"
 	_ "github.com/lib/pq"
@@ -17,7 +18,7 @@ func New(db *sql.DB) *Database {
 	}
 }
 
-func (s *Database) User() *UserRepository {
+func (s *Database) User() database.UserRepository {
 	if s.userRepository != nil {
 		return s.userRepository
 	}

@@ -2,6 +2,7 @@ package sqldb
 
 import (
 	"database/sql"
+	"fmt"
 	"strings"
 	"testing"
 )
@@ -18,8 +19,11 @@ func TestDB(t *testing.T, databaseURL string) (*sql.DB, func(...string)) {
 	}
 	return db, func(tables ...string) {
 		if len(tables) > 0 {
-			db.Exec("TRUNCATE %s CASCADE", strings.Join(tables, ","))
+			db.Exec(fmt.Sprintf("TRUNCATE %s CASCADE", strings.Join(tables, ",")))
 		}
-		db.Close()
+		err := db.Close()
+		if err != nil {
+			return
+		}
 	}
 }
