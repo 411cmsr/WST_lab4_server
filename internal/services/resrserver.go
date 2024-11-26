@@ -3,6 +3,7 @@ package services
 import (
 	"WST_lab4_server/internal/database/sqldb"
 	"database/sql"
+	"github.com/gorilla/sessions"
 	"net/http"
 )
 
@@ -14,7 +15,8 @@ func Start(config *Config) error {
 	defer db.Close()
 
 	database := sqldb.New(db)
-	srv := newServer(database)
+	sessionsStore := sessions.NewCookieStore([]byte(config.SessionKey))
+	srv := newServer(database, sessionsStore)
 
 	return http.ListenAndServe(config.BindAddr, srv)
 }
