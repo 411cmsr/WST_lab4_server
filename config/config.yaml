@@ -1,3 +1,4 @@
+log_level: "debug"
 database:
   host: 192.168.253.229
   user: postgres
@@ -5,9 +6,8 @@ database:
   name: wstbd
   port: 5432
   sslmode: disable
-soap:
-  pathsoap: soap
-  pathhttp: /
+httpserver:
+  bind_addr: ":8089"
 persons:
   - name: "Петр"
     surname: "Петров"
@@ -64,4 +64,3 @@ persons:
     age: 35
     email: leo@mail.com
     telephone: +70011234577
-
