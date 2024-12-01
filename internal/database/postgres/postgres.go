@@ -1,24 +1,26 @@
 package postgres
 
 import (
+	"WST_lab4_server/config"
 	"WST_lab4_server/internal/models"
+	"WST_lab4_server/internal/services"
 	"fmt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"log"
-
-	"WST_lab4_server/config"
 )
 
-var db *gorm.DB
+var DB *gorm.DB
 
-func InitDB(configFile string) error {
+func New(configFile string) {
+	services.InitializeLogger()
 	var err error
+	///
 	configuration, err := config.LoadConfig(configFile)
-
 	if err != nil {
 		log.Fatalf("error loading config: %v", err)
 	}
+	services.Logger.Info("Config uploaded successfully.")
 
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d sslmode=%s",
 		configuration.Database.Host,
@@ -27,29 +29,24 @@ func InitDB(configFile string) error {
 		configuration.Database.Name,
 		configuration.Database.Port,
 		configuration.Database.SSLMode)
-
-	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	/////
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		return err
+		log.Fatalf("error connecting to database: %v", err)
 	}
-
-	return db.AutoMigrate(&models.Person{})
-}
-
-func UpdateDB(configFile string) error {
-	var err error
-	configuration, err := config.LoadConfig(configFile)
+	services.Logger.Info("Database connection established successfully.")
+	/////
+	err = db.AutoMigrate(&models.Person{})
 	if err != nil {
-		log.Fatalf("error loading config: %v", err)
+		log.Fatalf("error creating table: %v", err)
 	}
+	services.Logger.Info("Migration completed successfully.")
+	/////
 	db.Exec("DELETE FROM people")
+	///
 	result := db.Create(&configuration.Persons)
 	if result.Error != nil {
-		return result.Error
+		log.Fatalf("error creating table: %v", result.Error)
 	}
-	return err
-}
-
-func GetDB() *gorm.DB {
-	return db
+	services.Logger.Info("Database updated successfully.")
 }

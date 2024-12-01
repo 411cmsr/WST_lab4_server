@@ -1,9 +1,0 @@
-{"level":"info","ts":"2024-11-30T22:47:56.751+0300","caller":"cmd/main.go:20","msg":"Database connection established successfully."}
-{"level":"info","ts":"2024-11-30T22:47:56.789+0300","caller":"cmd/main.go:26","msg":"Database updated successfully."}
-{"level":"info","ts":"2024-12-01T16:13:54.890+0300","caller":"cmd/main.go:18","msg":"Database connection established successfully."}
-{"level":"info","ts":"2024-12-01T16:13:54.922+0300","caller":"cmd/main.go:24","msg":"Database updated successfully."}
-{"level":"info","ts":"2024-12-01T16:30:06.083+0300","caller":"cmd/main.go:21","msg":"Database connection established successfully."}
-{"level":"info","ts":"2024-12-01T16:30:06.104+0300","caller":"cmd/main.go:27","msg":"Database updated successfully."}
-{"level":"info","ts":"2024-12-01T16:33:26.351+0300","caller":"cmd/main.go:21","msg":"Database connection established successfully."}
-{"level":"info","ts":"2024-12-01T16:33:26.379+0300","caller":"cmd/main.go:27","msg":"Database updated successfully."}
-{"level":"fatal","ts":"2024-12-01T16:33:26.380+0300","caller":"cmd/main.go:31","msg":"Failed to start server","error":"listen tcp :8088: bind: address already in use","stacktrace":"main.main\n\t/home/alex/Documents/edu_itmo/web_golang/WST_labs/WST_lab4_server/cmd/main.go:31\nruntime.main\n\t/usr/local/go/src/runtime/proc.go:272"}

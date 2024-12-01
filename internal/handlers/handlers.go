@@ -4,9 +4,9 @@ import (
 	"go.uber.org/zap"
 	"net/http"
 
-	"WST_lab1_server/internal/database"
-	"WST_lab1_server/internal/models"
-	"WST_lab1_server/internal/services"
+	//"WST_lab4_server/internal/database/postgres"
+	"WST_lab4_server/internal/models"
+	"WST_lab4_server/internal/services"
 )
 
 var logger *zap.Logger
@@ -25,20 +25,20 @@ func init() {
 	}(logger)
 }
 
-func AddPersonHandler(request interface{}, w http.ResponseWriter, r *http.Request) (interface{}, error) {
-	req := request.(*services.AddPersonRequest)
-	logger.Info("Received AddPerson request", zap.Any("request", req))
-	person := models.Person{Name: req.Name, Surname: req.Surname, Age: req.Age}
-
-	db := database.GetDB()
-
-	if err := db.Create(&person).Error; err != nil {
-		logger.Error("Error adding person", zap.Error(err))
-		return nil, err
-	}
-	logger.Info("Person added successfully", zap.Any("person", person))
-	return person, nil
-}
+//func AddPersonHandler(request interface{}, w http.ResponseWriter, r *http.Request) (interface{}, error) {
+//	req := request.(*services.AddPersonRequest)
+//	logger.Info("Received AddPerson request", zap.Any("request", req))
+//	person := models.Person{Name: req.Name, Surname: req.Surname, Age: req.Age}
+//
+//	db := database.GetDB()
+//
+//	if err := db.Create(&person).Error; err != nil {
+//		logger.Error("Error adding person", zap.Error(err))
+//		return nil, err
+//	}
+//	logger.Info("Person added successfully", zap.Any("person", person))
+//	return person, nil
+//}
 
 func UpdatePersonHandler(request interface{}, w http.ResponseWriter, r *http.Request) (interface{}, error) {
 	req := request.(*services.UpdatePersonRequest)

@@ -3,35 +3,22 @@ package main
 import (
 	"WST_lab4_server/internal/database/postgres"
 	"WST_lab4_server/internal/services"
-	"go.uber.org/zap"
-	"net/http"
+	"flag"
+	"fmt"
+	"github.com/gin-gonic/gin"
 )
 
-type MyHandler struct{}
+var flagConfig = flag.String("conf", "pc", "path to the config file (ps, vm or note")
 
 func main() {
+	flag.Parse()
 	services.InitializeLogger()
 
-	configFile := "config/config.yaml"
+	configFile := "config/" + *flagConfig + ".yaml"
+	fmt.Println(configFile)
+	postgres.New(configFile)
 
-	err := postgres.InitDB(configFile)
-	if err != nil {
-		services.Logger.Fatal("Failed to connect to database", zap.Error(err))
-	}
-	services.Logger.Info("Database connection established successfully.")
+	router := gin.Default()
+	router.GET("/api/v1", func(c *gin.Context) {})
 
-	err = postgres.UpdateDB(configFile)
-	if err != nil {
-		services.Logger.Fatal("Failed to update database", zap.Error(err))
-	}
-	services.Logger.Info("Database updated successfully.")
-
-	err = http.ListenAndServe(":8088", MyHandler{})
-	if err != nil {
-		services.Logger.Fatal("Failed to start server", zap.Error(err))
-	}
-
-}
-func (MyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Hello World"))
 }
