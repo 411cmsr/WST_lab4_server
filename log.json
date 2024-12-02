@@ -174,3 +174,35 @@
 {"level":"info","ts":"2024-12-02T14:28:30.772+0300","caller":"postgres/postgres.go:37","msg":"Database connection established successfully."}
 {"level":"info","ts":"2024-12-02T14:28:30.799+0300","caller":"postgres/postgres.go:43","msg":"Migration completed successfully."}
 {"level":"info","ts":"2024-12-02T14:28:30.812+0300","caller":"postgres/postgres.go:51","msg":"Database updated successfully."}
+{"level":"info","ts":"2024-12-02T18:18:08.180+0300","caller":"postgres/postgres.go:23","msg":"Config uploaded successfully."}
+{"level":"info","ts":"2024-12-02T18:18:08.221+0300","caller":"postgres/postgres.go:37","msg":"Database connection established successfully."}
+{"level":"info","ts":"2024-12-02T18:18:08.640+0300","caller":"postgres/postgres.go:43","msg":"Migration completed successfully."}
+{"level":"info","ts":"2024-12-02T18:18:08.648+0300","caller":"postgres/postgres.go:51","msg":"Database updated successfully."}
+{"level":"info","ts":"2024-12-02T18:31:33.164+0300","caller":"postgres/postgres.go:23","msg":"Config uploaded successfully."}
+{"level":"info","ts":"2024-12-02T18:31:33.197+0300","caller":"postgres/postgres.go:37","msg":"Database connection established successfully."}
+{"level":"info","ts":"2024-12-02T18:31:33.290+0300","caller":"postgres/postgres.go:43","msg":"Migration completed successfully."}
+{"level":"info","ts":"2024-12-02T18:31:33.299+0300","caller":"postgres/postgres.go:51","msg":"Database updated successfully."}
+{"level":"info","ts":"2024-12-02T18:58:14.106+0300","caller":"postgres/postgres.go:23","msg":"Config uploaded successfully."}
+{"level":"info","ts":"2024-12-02T18:58:14.136+0300","caller":"postgres/postgres.go:37","msg":"Database connection established successfully."}
+{"level":"info","ts":"2024-12-02T18:58:14.224+0300","caller":"postgres/postgres.go:43","msg":"Migration completed successfully."}
+{"level":"info","ts":"2024-12-02T18:58:14.229+0300","caller":"postgres/postgres.go:51","msg":"Database updated successfully."}
+{"level":"info","ts":"2024-12-02T19:05:12.146+0300","caller":"postgres/postgres.go:23","msg":"Config uploaded successfully."}
+{"level":"info","ts":"2024-12-02T19:05:12.177+0300","caller":"postgres/postgres.go:37","msg":"Database connection established successfully."}
+{"level":"info","ts":"2024-12-02T19:05:12.266+0300","caller":"postgres/postgres.go:43","msg":"Migration completed successfully."}
+{"level":"info","ts":"2024-12-02T19:05:12.270+0300","caller":"postgres/postgres.go:51","msg":"Database updated successfully."}
+{"level":"info","ts":"2024-12-02T20:06:27.162+0300","caller":"postgres/postgres.go:23","msg":"Config uploaded successfully."}
+{"level":"info","ts":"2024-12-02T20:06:27.196+0300","caller":"postgres/postgres.go:37","msg":"Database connection established successfully."}
+{"level":"info","ts":"2024-12-02T20:06:27.290+0300","caller":"postgres/postgres.go:43","msg":"Migration completed successfully."}
+{"level":"info","ts":"2024-12-02T20:06:27.297+0300","caller":"postgres/postgres.go:51","msg":"Database updated successfully."}
+{"level":"info","ts":"2024-12-02T20:18:48.017+0300","caller":"postgres/postgres.go:23","msg":"Config uploaded successfully."}
+{"level":"info","ts":"2024-12-02T20:18:48.046+0300","caller":"postgres/postgres.go:37","msg":"Database connection established successfully."}
+{"level":"info","ts":"2024-12-02T20:18:48.137+0300","caller":"postgres/postgres.go:43","msg":"Migration completed successfully."}
+{"level":"info","ts":"2024-12-02T20:18:48.142+0300","caller":"postgres/postgres.go:51","msg":"Database updated successfully."}
+{"level":"info","ts":"2024-12-02T20:35:06.049+0300","caller":"postgres/postgres.go:23","msg":"Config uploaded successfully."}
+{"level":"info","ts":"2024-12-02T20:35:06.078+0300","caller":"postgres/postgres.go:37","msg":"Database connection established successfully."}
+{"level":"info","ts":"2024-12-02T20:35:06.172+0300","caller":"postgres/postgres.go:43","msg":"Migration completed successfully."}
+{"level":"info","ts":"2024-12-02T20:35:06.179+0300","caller":"postgres/postgres.go:51","msg":"Database updated successfully."}
+{"level":"info","ts":"2024-12-02T20:46:49.980+0300","caller":"postgres/postgres.go:23","msg":"Config uploaded successfully."}
+{"level":"info","ts":"2024-12-02T20:46:50.007+0300","caller":"postgres/postgres.go:37","msg":"Database connection established successfully."}
+{"level":"info","ts":"2024-12-02T20:46:50.097+0300","caller":"postgres/postgres.go:43","msg":"Migration completed successfully."}
+{"level":"info","ts":"2024-12-02T20:46:50.102+0300","caller":"postgres/postgres.go:51","msg":"Database updated successfully."}

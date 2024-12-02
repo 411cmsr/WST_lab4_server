@@ -1,9 +1,11 @@
 package handlers
 
 import (
+	"WST_lab4_server/internal/database/postgres"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -113,11 +115,27 @@ func (ph *PersonHandler) AddPerson(ctx *gin.Context) {
 }
 
 // GetPerson
-func (ph *PersonHandler) GetPerson(ctx *gin.Context) {
+// func (ph *PersonHandler) GetPerson(ctx *gin.Context) {
+func GetPerson(ctx *gin.Context) {
 	personId := ctx.Param("personId")
+
+	fmt.Println(personId)
 	fmt.Println("GetPerson")
+
 	var person models.Person
-	result := ph.DB.First(&person, "id = ?", personId)
+	var results []models.Person
+	if err := postgres.DB.Find(&results).Error; err != nil {
+		log.Fatalf("query failed: %v", err)
+	}
+
+	for _, record := range results {
+		fmt.Println(record)
+
+	}
+
+	result := postgres.DB.First(&person, "id = ?", personId)
+	fmt.Println("PERSONNNNNNNN", person)
+	fmt.Println("ERREREREOROROROORORORO", result.Error)
 	if result.Error != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"status": "fail", "message": "No person with that id exists"})
 		return
@@ -180,8 +198,14 @@ func (ph *PersonHandler) DeletePerson(ctx *gin.Context) {
 
 	result := ph.DB.Delete(&models.Person{}, "id = ?", personId)
 	if result.Error != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"status": "fail", "message": "Error occurred while deleting the person"})
+		return
+	}
+
+	if result.RowsAffected == 0 {
 		ctx.JSON(http.StatusNotFound, gin.H{"status": "fail", "message": "No person with that id exists"})
 		return
 	}
+
 	ctx.JSON(http.StatusNoContent, nil)
 }

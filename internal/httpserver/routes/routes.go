@@ -5,21 +5,28 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type PersonRouteHandler struct {
-	personHandler handlers.PersonHandler
-}
+//type PersonRouteHandler struct {
+//	personHandler handlers.PersonHandler
+//}
+//
+//func NewRoutePersonHandler(personHandler handlers.PersonHandler) PersonRouteHandler {
+//	return PersonRouteHandler{personHandler}
+//}
+//
+//func (ph *PersonRouteHandler) PersonRoute(rg *gin.RouterGroup) {
+//
+//	router := rg.Group("persons")
+//	router.GET("/", ph.personHandler.FindPerson)
+//	router.POST("/", ph.personHandler.AddPerson)
+//	router.GET("/list", ph.personHandler.GetAllPersons)
+//	router.GET("/:id", ph.personHandler.GetPerson)
+//	router.PUT("/:id", ph.personHandler.UpdatePerson)
+//	router.DELETE("/:id", ph.personHandler.DeletePerson)
+//}
 
-func NewRoutePersonHandler(personHandler handlers.PersonHandler) PersonRouteHandler {
-	return PersonRouteHandler{personHandler}
-}
+func RegisterRoutes(server *gin.Engine) {
 
-func (ph *PersonRouteHandler) PersonRoute(rg *gin.RouterGroup) {
+	router := server.Group("persons")
+	router.GET("/", handlers.GetPerson)
 
-	router := rg.Group("persons")
-	router.GET("/", ph.personHandler.FindPerson)
-	router.POST("/", ph.personHandler.AddPerson)
-	router.GET("/list", ph.personHandler.GetAllPersons)
-	router.GET("/:personId", ph.personHandler.GetPerson)
-	router.PUT("/:personId", ph.personHandler.UpdatePerson)
-	router.DELETE("/:personId", ph.personHandler.DeletePerson)
 }

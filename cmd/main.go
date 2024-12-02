@@ -2,23 +2,24 @@ package main
 
 import (
 	"WST_lab4_server/internal/database/postgres"
-	"WST_lab4_server/internal/handlers"
 	"WST_lab4_server/internal/httpserver/routes"
 	"WST_lab4_server/internal/services"
 	"flag"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"log"
-	"net/http"
 )
 
 var flagConfig = flag.String("conf", "pc", "path to the config file (ps, vm or note")
 
-var (
-	server             *gin.Engine
-	PersonHandler      handlers.PersonHandler
-	PersonRouteHandler routes.PersonRouteHandler
-)
+//var (
+//	server             *gin.Engine
+//	PersonHandler      handlers.PersonHandler
+//	PersonRouteHandler routes.PersonRouteHandler
+//)
+
+func init() {
+
+}
 
 func main() {
 	flag.Parse()
@@ -28,20 +29,30 @@ func main() {
 	fmt.Println(configFile)
 	postgres.New(configFile)
 	///
-	PersonHandler = handlers.NewPersonHandler(postgres.DB)
-	PersonRouteHandler = routes.NewRoutePersonHandler(PersonHandler)
+	//PersonHandler = handlers.NewPersonHandler(postgres.DB)
+	//PersonRouteHandler = routes.NewRoutePersonHandler(PersonHandler)
 	//
-	gin.SetMode(gin.TestMode)
+	//gin.SetMode(gin.TestMode)
+	//server := gin.Default()
+	//server.StaticFile("/favicon.ico", "./favicon.ico")
+	//
+	//router := server.Group("/api/v1")
+	//
+	//router.GET("/healthchecker", func(ctx *gin.Context) {
+	//	message := "Welcome to Test"
+	//	ctx.JSON(http.StatusOK, gin.H{"status": "success", "message": message})
+	//})
+	//
+	//PersonRouteHandler.PersonRoute(router)
+	//log.Fatal(server.Run(":8084"))
+
 	server := gin.Default()
-	server.StaticFile("/favicon.ico", "./favicon.ico")
 
-	router := server.Group("/api/v1")
-	router.GET("/healthchecker", func(ctx *gin.Context) {
-		message := "Welcome to Test"
-		ctx.JSON(http.StatusOK, gin.H{"status": "success", "message": message})
-	})
+	routes.RegisterRoutes(server)
 
-	PersonRouteHandler.PersonRoute(router)
-	log.Fatal(server.Run(":8084"))
-
+	err := server.Run(":8086")
+	if err != nil {
+		fmt.Println(err)
+		return
+	} // localhost:8080
 }
