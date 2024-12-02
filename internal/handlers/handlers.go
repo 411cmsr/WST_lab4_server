@@ -1,125 +1,187 @@
 package handlers
 
 import (
-	"go.uber.org/zap"
+	"fmt"
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	"net/http"
-
+	"strconv"
+	"strings"
 	//"WST_lab4_server/internal/database/postgres"
 	"WST_lab4_server/internal/models"
-	"WST_lab4_server/internal/services"
 )
 
-var logger *zap.Logger
-
-func init() {
-	var err error
-	logger, err = zap.NewDevelopment()
-	if err != nil {
-		panic(err)
-	}
-	defer func(logger *zap.Logger) {
-		err := logger.Sync()
-		if err != nil {
-
-		}
-	}(logger)
-}
-
-//func AddPersonHandler(request interface{}, w http.ResponseWriter, r *http.Request) (interface{}, error) {
-//	req := request.(*services.AddPersonRequest)
-//	logger.Info("Received AddPerson request", zap.Any("request", req))
-//	person := models.Person{Name: req.Name, Surname: req.Surname, Age: req.Age}
+//var logger *zap.Logger
 //
-//	db := database.GetDB()
-//
-//	if err := db.Create(&person).Error; err != nil {
-//		logger.Error("Error adding person", zap.Error(err))
-//		return nil, err
+//func init() {
+//	var err error
+//	logger, err = zap.NewDevelopment()
+//	if err != nil {
+//		panic(err)
 //	}
-//	logger.Info("Person added successfully", zap.Any("person", person))
-//	return person, nil
+//	defer func(logger *zap.Logger) {
+//		err := logger.Sync()
+//		if err != nil {
+//
+//		}
+//	}(logger)
 //}
 
-func UpdatePersonHandler(request interface{}, w http.ResponseWriter, r *http.Request) (interface{}, error) {
-	req := request.(*services.UpdatePersonRequest)
-	logger.Info("Received UpdatePerson request", zap.Any("request", req))
-	db := database.GetDB()
-
-	var person models.Person
-	if err := db.First(&person, req.ID).Error; err != nil {
-		logger.Error("Error finding person with ID", zap.Uint("ID", req.ID), zap.Error(err))
-		return nil, err
-	}
-
-	person.Name = req.Name
-	person.Surname = req.Surname
-	person.Age = req.Age
-
-	if err := db.Save(&person).Error; err != nil {
-		logger.Error("Error updating person", zap.Error(err))
-		return nil, err
-	}
-	logger.Info("Person updated successfully", zap.Any("person", person))
-	return person, nil
+type PersonHandler struct {
+	DB *gorm.DB
 }
 
-func DeletePersonHandler(request interface{}, w http.ResponseWriter, r *http.Request) (interface{}, error) {
-	req := request.(*services.DeletePersonRequest)
-	logger.Info("Received DeletePerson request", zap.Any("request", req))
-	db := database.GetDB()
-
-	if err := db.Delete(&models.Person{}, req.ID).Error; err != nil {
-		logger.Error("Error deleting person with ID", zap.Uint("ID", req.ID), zap.Error(err))
-		return nil, err
-	}
-	logger.Info("Person deleted successfully", zap.Uint("ID", req.ID))
-	return "Deleted successfully", nil
+func NewPersonHandler(DB *gorm.DB) PersonHandler {
+	return PersonHandler{DB}
 }
 
-func GetPersonHandler(request interface{}, w http.ResponseWriter, r *http.Request) (interface{}, error) {
-	req := request.(*services.GetPersonRequest)
-	logger.Info("Received GetPerson request", zap.Any("request", req))
-	var person models.Person
+// FindPerson
+func (pc *PersonHandler) FindPerson(ctx *gin.Context) {
+	name := ctx.Query("name")
+	surname := ctx.Query("surname")
+	age := ctx.Query("age")
+	email := ctx.Query("email")
+	telephone := ctx.Query("telephone")
 
-	db := database.GetDB()
-
-	if err := db.First(&person, req.ID).Error; err != nil {
-		logger.Error("Error finding person with ID", zap.Uint("ID", req.ID), zap.Error(err))
-		return nil, err
-	}
-	logger.Info("Retrieved person successfully", zap.Any("person", person))
-	return person, nil
-}
-
-func GetAllPersonsHandler(request interface{}, w http.ResponseWriter, r *http.Request) (interface{}, error) {
-	logger.Info("Received GetAllPersons request.")
 	var persons []models.Person
+	query := pc.DB.Model(&models.Person{})
 
-	db := database.GetDB()
+	var conditions []string
+	var args []interface{}
 
-	if err := db.Find(&persons).Error; err != nil {
-		logger.Error("Error retrieving all persons", zap.Error(err))
-		return nil, err
+	if name != "" {
+		conditions = append(conditions, "name = ?")
+		args = append(args, name)
 	}
-	logger.Info("Retrieved all persons successfully", zap.Any("persons", persons))
-	return services.GetAllPersonsResponse{Persons: persons}, nil
+	if surname != "" {
+		conditions = append(conditions, "surname = ?")
+		args = append(args, surname)
+	}
+	if age != "" {
+		conditions = append(conditions, "age = ?")
+		args = append(args, age)
+	}
+	if email != "" {
+		conditions = append(conditions, "email = ?")
+		args = append(args, email)
+	}
+	if telephone != "" {
+		conditions = append(conditions, "telephone = ?")
+		args = append(args, telephone)
+	}
+
+	if len(conditions) > 0 {
+		query = query.Where(strings.Join(conditions, " OR "), args...)
+	}
+
+	result := query.Find(&persons)
+	if result.Error != nil || len(persons) == 0 {
+		ctx.JSON(http.StatusNotFound, gin.H{"status": "fail", "message": "No person found with the given criteria"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"status": "success", "data": persons})
 }
 
-func SearchPersonHandler(request interface{}, w http.ResponseWriter, r *http.Request) (interface{}, error) {
-	req := request.(*services.SearchPersonRequest)
-	logger.Info("Received SearchPerson request with query", zap.String("query", req.Query))
+// AddPerson
+func (ph *PersonHandler) AddPerson(ctx *gin.Context) {
+	var payload *models.AddPersonRequest
+
+	if err := ctx.ShouldBindJSON(&payload); err != nil {
+		ctx.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	newPerson := models.Person{
+		Name:      payload.Name,
+		Surname:   payload.Surname,
+		Age:       payload.Age,
+		Email:     payload.Email,
+		Telephone: payload.Telephone,
+	}
+
+	result := ph.DB.Create(&newPerson)
+	if result.Error != nil {
+		if strings.Contains(result.Error.Error(), "duplicate key") {
+			ctx.JSON(http.StatusConflict, gin.H{"status": "fail", "message": "Person with that email already exists"})
+			return
+		}
+		ctx.JSON(http.StatusBadGateway, gin.H{"status": "error", "message": result.Error.Error()})
+		return
+	}
+	ctx.JSON(http.StatusCreated, gin.H{"status": "success", "data": newPerson})
+}
+
+// GetPerson
+func (ph *PersonHandler) GetPerson(ctx *gin.Context) {
+	personId := ctx.Param("personId")
+	fmt.Println("GetPerson")
+	var person models.Person
+	result := ph.DB.First(&person, "id = ?", personId)
+	if result.Error != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"status": "fail", "message": "No person with that id exists"})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"status": "success", "data": person})
+}
+
+// GetAllPerson
+func (ph *PersonHandler) GetAllPersons(ctx *gin.Context) {
+	var page = ctx.DefaultQuery("page", "1")
+	var limit = ctx.DefaultQuery("limit", "10")
+
+	intPage, err := strconv.Atoi(page)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"status": "fail", "message": err.Error()})
+	}
+	intLimit, err := strconv.Atoi(limit)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"status": "fail", "message": err.Error()})
+	}
+	offset := (intPage - 1) * intLimit
+
 	var persons []models.Person
-
-	db := database.GetDB()
-
-	if err := db.Where("name ILIKE ? OR surname ILIKE ? OR age::text ILIKE ?", "%"+req.Query+"%", "%"+req.Query+"%", "%"+req.Query+"%").Find(&persons).Error; err != nil {
-		logger.Error("Error searching for persons with query", zap.String("query", req.Query), zap.Error(err))
-		return nil, err
+	result := ph.DB.Limit(intLimit).Offset(offset).Find(&persons)
+	if result.Error != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"status": "fail", "message": result.Error.Error()})
+		return
 	}
-	if len(persons) == 0 {
-		logger.Info("Search completed with no results", zap.String("query", req.Query))
-	} else {
-		logger.Info("Search completed successfully", zap.String("query", req.Query), zap.Int("count", len(persons)), zap.Any("results", persons))
+	ctx.JSON(http.StatusOK, gin.H{"status": "success", "data": persons})
+}
+
+// UpdatePerson
+func (ph *PersonHandler) UpdatePerson(ctx *gin.Context) {
+	personId := ctx.Param("personId")
+	var payload *models.UpdatePersonRequest
+	if err := ctx.ShouldBindJSON(&payload); err != nil {
+		ctx.JSON(http.StatusBadGateway, gin.H{"status": "fail", "message": err.Error()})
+		return
 	}
-	return services.GetAllPersonsResponse{Persons: persons}, nil
+	var updatedPerson models.Person
+	result := ph.DB.First(&updatedPerson, "id = ?", personId)
+	if result.Error != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"status": "fail", "message": "No person with that email exists"})
+		return
+	}
+	personToUpdate := models.Person{
+		Name:      payload.Name,
+		Surname:   payload.Surname,
+		Age:       payload.Age,
+		Email:     payload.Email,
+		Telephone: payload.Telephone,
+	}
+	ph.DB.Model(&updatedPerson).Updates(personToUpdate)
+	ctx.JSON(http.StatusOK, gin.H{"status": "success", "data": updatedPerson})
+}
+
+// DeletePerson    ----  check
+func (ph *PersonHandler) DeletePerson(ctx *gin.Context) {
+	personId := ctx.Param("personId")
+
+	result := ph.DB.Delete(&models.Person{}, "id = ?", personId)
+	if result.Error != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"status": "fail", "message": "No person with that id exists"})
+		return
+	}
+	ctx.JSON(http.StatusNoContent, nil)
 }

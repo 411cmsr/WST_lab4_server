@@ -49,4 +49,17 @@ func New(configFile string) {
 		log.Fatalf("error creating table: %v", result.Error)
 	}
 	services.Logger.Info("Database updated successfully.")
+
+	//////////////////////////////
+	////////////////////////////////
+	var results []models.Person
+	if err := db.Find(&results).Error; err != nil {
+		log.Fatalf("query failed: %v", err)
+	}
+
+	for _, record := range results {
+		fmt.Println(record)
+
+	}
+	fmt.Println("database content in quantity:", len(results))
 }

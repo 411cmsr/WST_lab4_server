@@ -9,8 +9,8 @@ database:
 httpserver:
   bind_addr: ":8089"
 persons:
-  - name: "Петр"
-    surname: "Петров"
+  - name: "Петeр"
+    surname: "Пеeтров"
     age: 25
     email: petr@mai.com
     telephone: +70011234567
@@ -25,12 +25,12 @@ persons:
     email: ivan@mail.com
     telephone: +70011234569
   - name: "Иммануил"
-    surname: "Канат"
+    surname: "Канатd"
     age: 28
     email: immanuil@mail.com
     telephone: +70011234570
   - name: "Джордж"
-    surname: "Клуни"
+    surname: "Клунewи"
     age: 29
     email: george@mail.com
     telephone: +70011234571
