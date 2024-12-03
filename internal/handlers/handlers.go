@@ -115,8 +115,8 @@ func (ph *PersonHandler) AddPerson(ctx *gin.Context) {
 }
 
 // GetPerson
-// func (ph *PersonHandler) GetPerson(ctx *gin.Context) {
-func GetPerson(ctx *gin.Context) {
+func (ph *PersonHandler) GetPerson(ctx *gin.Context) {
+
 	personId := ctx.Param("personId")
 
 	fmt.Println(personId)

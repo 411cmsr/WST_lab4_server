@@ -1,7 +1,9 @@
 package main
 
 import (
+	"WST_lab4_server/config"
 	"WST_lab4_server/internal/database/postgres"
+	"WST_lab4_server/internal/handlers"
 	"WST_lab4_server/internal/httpserver/routes"
 	"WST_lab4_server/internal/services"
 	"flag"
@@ -11,14 +13,8 @@ import (
 
 var flagConfig = flag.String("conf", "pc", "path to the config file (ps, vm or note")
 
-//var (
-//	server             *gin.Engine
-//	PersonHandler      handlers.PersonHandler
-//	PersonRouteHandler routes.PersonRouteHandler
-//)
-
 func init() {
-
+	config.Init()
 }
 
 func main() {
@@ -28,7 +24,7 @@ func main() {
 	configFile := "config/" + *flagConfig + ".yaml"
 	fmt.Println(configFile)
 	postgres.New(configFile)
-	///
+	//
 	//PersonHandler = handlers.NewPersonHandler(postgres.DB)
 	//PersonRouteHandler = routes.NewRoutePersonHandler(PersonHandler)
 	//
@@ -46,13 +42,6 @@ func main() {
 	//PersonRouteHandler.PersonRoute(router)
 	//log.Fatal(server.Run(":8084"))
 
-	server := gin.Default()
-
-	routes.RegisterRoutes(server)
-
-	err := server.Run(":8086")
-	if err != nil {
-		fmt.Println(err)
-		return
-	} // localhost:8080
+	gin.SetMode(config.Server.RunMode)
+	routesInit := routes.Init()
 }

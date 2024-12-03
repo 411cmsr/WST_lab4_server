@@ -2,8 +2,10 @@ package config
 
 import (
 	"WST_lab4_server/internal/models"
+	"fmt"
 	"gopkg.in/yaml.v3"
 	"os"
+	"time"
 )
 
 type Config struct {
@@ -23,10 +25,32 @@ type Config struct {
 	Persons []models.Person `yaml:"persons"`
 }
 
-func LoadConfig(filePath string) (*Config, error) {
-	file, err := os.Open(filePath)
+// /Server
+type Server struct {
+	RunMode      string
+	HttpPort     int
+	ReadTimeout  time.Duration
+	WriteTimeout time.Duration
+}
+
+var ServerSetting = &Server{}
+
+// Database
+type Database struct {
+	Type     string
+	User     string
+	Password string
+	Host     string
+	Name     string
+}
+
+var DatabaseSetting = &Database{}
+
+func Init() {
+	file, err := os.Open("config")
 	if err != nil {
-		return nil, err
+		//return nil, err
+		fmt.Println("open file error:", err)
 	}
 	defer func(file *os.File) {
 		err := file.Close()
@@ -38,7 +62,8 @@ func LoadConfig(filePath string) (*Config, error) {
 	var config Config
 	decoder := yaml.NewDecoder(file)
 	if err := decoder.Decode(&config); err != nil {
-		return nil, err
+		//return nil, err
+		fmt.Println("Decode error:", err)
 	}
-	return &config, nil
+	//return &config, nil
 }
