@@ -2,8 +2,9 @@ package postgres
 
 import (
 	"WST_lab4_server/config"
+	"WST_lab4_server/internal/logging"
 	"WST_lab4_server/internal/models"
-	"WST_lab4_server/internal/services"
+	//"WST_lab4_server/internal/services"
 	"fmt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -46,13 +47,13 @@ func Init() {
 		log.Fatalf("error connecting to database: %v", err)
 	}
 
-	services.Logger.Info("Database connection established successfully.")
+	logging.Logger.Info("Database connection established successfully.")
 	/////
 	err = db.AutoMigrate(&models.Person{})
 	if err != nil {
 		log.Fatalf("error creating table: %v", err)
 	}
-	services.Logger.Info("Migration completed successfully.")
+	logging.Logger.Info("Migration completed successfully.")
 	/////
 	db.Exec("DELETE FROM people")
 	///
@@ -60,7 +61,7 @@ func Init() {
 	if result.Error != nil {
 		log.Fatalf("error creating table: %v", result.Error)
 	}
-	services.Logger.Info("Database updated successfully.")
+	logging.Logger.Info("Database updated successfully.")
 
 	//////////////////////////////
 	////////////////////////////////
