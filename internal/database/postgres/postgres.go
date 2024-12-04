@@ -7,33 +7,45 @@ import (
 	"fmt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 	"log"
 )
 
-var DB *gorm.DB
+var db *gorm.DB
 
-func New(configFile string) {
-	services.InitializeLogger()
+func Init() {
+	//services.InitializeLogger()
 	var err error
-	///
-	configuration, err := config.LoadConfig(configFile)
-	if err != nil {
-		log.Fatalf("error loading config: %v", err)
+	var logLevel logger.LogLevel
+
+	switch config.GeneralServerSetting.LogLevel {
+	case "fatal":
+		logLevel = logger.Silent
+	case "error":
+		logLevel = logger.Error
+	case "warn":
+		logLevel = logger.Warn
+	case "info", "debug":
+		logLevel = logger.Info
+	default:
+		logLevel = logger.Info // Значение по умолчанию
 	}
-	services.Logger.Info("Config uploaded successfully.")
 
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d sslmode=%s",
-		configuration.Database.Host,
-		configuration.Database.User,
-		configuration.Database.Password,
-		configuration.Database.Name,
-		configuration.Database.Port,
-		configuration.Database.SSLMode)
-	/////
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+		config.DatabaseSetting.Host,
+		config.DatabaseSetting.User,
+		config.DatabaseSetting.Password,
+		config.DatabaseSetting.Name,
+		config.DatabaseSetting.Port,
+		config.DatabaseSetting.SSLMode)
+
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+		Logger: logger.Default.LogMode(logLevel),
+	})
 	if err != nil {
 		log.Fatalf("error connecting to database: %v", err)
 	}
+
 	services.Logger.Info("Database connection established successfully.")
 	/////
 	err = db.AutoMigrate(&models.Person{})
@@ -44,7 +56,7 @@ func New(configFile string) {
 	/////
 	db.Exec("DELETE FROM people")
 	///
-	result := db.Create(&configuration.Persons)
+	result := db.Create(&config.GeneralServerSetting.DataSet)
 	if result.Error != nil {
 		log.Fatalf("error creating table: %v", result.Error)
 	}

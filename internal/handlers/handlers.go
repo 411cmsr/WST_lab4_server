@@ -29,9 +29,9 @@ import (
 //	}(logger)
 //}
 
-type PersonHandler struct {
-	DB *gorm.DB
-}
+//type PersonHandler struct {
+//	DB *gorm.DB
+//}
 
 func NewPersonHandler(DB *gorm.DB) PersonHandler {
 	return PersonHandler{DB}

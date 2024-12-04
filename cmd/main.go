@@ -3,45 +3,47 @@ package main
 import (
 	"WST_lab4_server/config"
 	"WST_lab4_server/internal/database/postgres"
-	"WST_lab4_server/internal/handlers"
-	"WST_lab4_server/internal/httpserver/routes"
-	"WST_lab4_server/internal/services"
-	"flag"
 	"fmt"
 	"github.com/gin-gonic/gin"
-)
+	"log"
+	"net/http"
 
-var flagConfig = flag.String("conf", "pc", "path to the config file (ps, vm or note")
+	//"WST_lab4_server/internal/handlers"
+	"WST_lab4_server/internal/httpserver/routes"
+	//"WST_lab4_server/internal/services"
+	//"flag"
+	//"fmt"
+	//"github.com/gin-gonic/gin"
+)
 
 func init() {
 	config.Init()
 }
 
 func main() {
-	flag.Parse()
-	services.InitializeLogger()
 
-	configFile := "config/" + *flagConfig + ".yaml"
-	fmt.Println(configFile)
-	postgres.New(configFile)
-	//
-	//PersonHandler = handlers.NewPersonHandler(postgres.DB)
-	//PersonRouteHandler = routes.NewRoutePersonHandler(PersonHandler)
-	//
-	//gin.SetMode(gin.TestMode)
-	//server := gin.Default()
-	//server.StaticFile("/favicon.ico", "./favicon.ico")
-	//
-	//router := server.Group("/api/v1")
-	//
-	//router.GET("/healthchecker", func(ctx *gin.Context) {
-	//	message := "Welcome to Test"
-	//	ctx.JSON(http.StatusOK, gin.H{"status": "success", "message": message})
-	//})
-	//
-	//PersonRouteHandler.PersonRoute(router)
-	//log.Fatal(server.Run(":8084"))
+	//	services.InitializeLogger()
+	postgres.Init()
+	gin.SetMode(config.HTTPServerSetting.RunMode)
+	routersInit := routes.Init()
 
-	gin.SetMode(config.Server.RunMode)
-	routesInit := routes.Init()
+	readTimeout := config.HTTPServerSetting.ReadTimeout
+	writeTimeout := config.HTTPServerSetting.WriteTimeout
+	endPoint := fmt.Sprintf(":%d", config.HTTPServerSetting.BindAddr)
+	maxHeaderBytes := 1 << 20
+
+	server := &http.Server{
+		Addr:           endPoint,
+		Handler:        routersInit,
+		ReadTimeout:    readTimeout,
+		WriteTimeout:   writeTimeout,
+		MaxHeaderBytes: maxHeaderBytes,
+	}
+
+	log.Printf("[info] start http server listening %s", endPoint)
+
+	err := server.ListenAndServe()
+	if err != nil {
+		return
+	}
 }

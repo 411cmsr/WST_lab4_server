@@ -5,21 +5,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type PersonRouteHandler struct {
-	personHandler handlers.PersonHandler
-}
+func Init() *gin.Engine {
+	router := gin.New()
+	router.Use(gin.Recovery())
+	router.Use(gin.Logger())
 
-func NewRoutePersonHandler(personHandler handlers.PersonHandler) PersonRouteHandler {
-	return PersonRouteHandler{personHandler}
-}
-
-func (ph *PersonRouteHandler) PersonRoute(rg *gin.RouterGroup) {
-
-	router := rg.Group("persons")
-	router.GET("/", ph.personHandler.FindPerson)
-	router.POST("/", ph.personHandler.AddPerson)
-	router.GET("/list", ph.personHandler.GetAllPersons)
-	router.GET("/:id", ph.personHandler.GetPerson)
-	router.PUT("/:id", ph.personHandler.UpdatePerson)
-	router.DELETE("/:id", ph.personHandler.DeletePerson)
+	apiv1 := router.Group("/api/v1")
+	apiv1.GET("/persons", handlers.FindPerson)
+	apiv1.POST("/persons", handlers.AddPerson)
+	apiv1.GET("/persons/list", handlers.GetAllPersons)
+	apiv1.GET("/person/:id", handlers.GetPerson)
+	apiv1.PUT("/person/:id", handlers.UpdatePerson)
+	apiv1.DELETE("/person/:id", handlers.DeletePerson)
+	return router
 }
