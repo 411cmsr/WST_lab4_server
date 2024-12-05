@@ -41,15 +41,15 @@ func Init() {
 	default:
 		logLevel = logger.Info // Значение по умолчанию
 	}
-	dsn := fmt.Sprintf("host=127.0.0.1 user=pguser password=pgpassword dbname=wstbd port=5432 sslmode=disable")
-	//dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d sslmode=%s",
-	//	config.DatabaseSetting.Host,
-	//	config.DatabaseSetting.User,
-	//	config.DatabaseSetting.Password,
-	//	config.DatabaseSetting.Name,
-	//	config.DatabaseSetting.Port,
-	//	config.DatabaseSetting.SSLMode)
-	//fmt.Println("Database", dsn)
+	//dsn := fmt.Sprintf("host=127.0.0.1 user=pguser password=pgpassword dbname=wstbd port=5432 sslmode=disable")
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d sslmode=%s",
+		config.DatabaseSetting.Host,
+		config.DatabaseSetting.User,
+		config.DatabaseSetting.Password,
+		config.DatabaseSetting.Name,
+		config.DatabaseSetting.Port,
+		config.DatabaseSetting.SSLMode)
+	fmt.Println("Database", dsn)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		Logger: logger.Default.LogMode(logLevel),
 	})

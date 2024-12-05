@@ -48,23 +48,21 @@ var DatabaseSetting = &DatabaseConfig{}
 
 // Init initializes the server configuration
 func Init() {
-	file, err := os.Open("config/note.yaml")
-	fmt.Println("File1111111\n\n")
+	file, err := os.ReadFile("config/note.yaml")
 	if err != nil {
 		log.Fatal("Failed to initialize config", zap.Error(err))
 	}
-	fmt.Println("File12222222\n\n")
-	defer func(file *os.File) {
-		err := file.Close()
-		if err != nil {
-
-		}
-	}(file)
-	fmt.Println("File33333333\n\n")
 	var config Config
-	decoder := yaml.NewDecoder(file)
-	fmt.Println("File444444\n\n")
-	if err := decoder.Decode(&config); err != nil {
+	err = yaml.Unmarshal(file, &config)
+	if err != nil {
 		log.Fatal("Decode file config error:", zap.Error(err))
 	}
+	fmt.Printf("Server Host: %s\n", config.Database.Host)
+	//fmt.Println("TTTTTTTTTTTTTTTTTTTTT", &DatabaseSetting)
+	fmt.Printf("Server Port: %d\n", config.Database.Port)
+	fmt.Printf("Database User: %s\n", config.Database.User)
+	fmt.Printf("Database Name: %s\n", config.Database.Name)
+	fmt.Printf("Database Password: %s\n", config.Database.Password)
+	fmt.Printf("Database SSL Mode: %s\n", config.Database.SSLMode)
+
 }
