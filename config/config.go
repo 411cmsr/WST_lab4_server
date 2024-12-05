@@ -2,6 +2,7 @@ package config
 
 import (
 	"WST_lab4_server/internal/models"
+	"fmt"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v3"
 	"log"
@@ -10,14 +11,14 @@ import (
 )
 
 type Config struct {
-	GeneralServer GeneralServerConfig `yaml:"general_server"`
-	HTTPServer    HTTPServerConfig    `yaml:"httpserver"`
+	GeneralServer GeneralServerConfig `yaml:"generalServer"`
+	HTTPServer    HTTPServerConfig    `yaml:"httpServer"`
 	Database      DatabaseConfig      `yaml:"database"`
 }
 
 type GeneralServerConfig struct {
 	Env      string          `yaml:"env" env-required:"true"`
-	LogLevel string          `yaml:"log_level" env-default:"debug"`
+	LogLevel string          `yaml:"logLevel" env-default:"debug"`
 	DataSet  []models.Person `yaml:"persons"`
 }
 
@@ -41,26 +42,28 @@ type DatabaseConfig struct {
 	Name     string `yaml:"name"`
 	Port     int    `yaml:"port"`
 	SSLMode  string `yaml:"sslMode"`
-	//LogLevel string `yaml:"log_level"`
 }
 
 var DatabaseSetting = &DatabaseConfig{}
 
 // Init initializes the server configuration
 func Init() {
-	file, err := os.Open("config")
+	file, err := os.Open("config/note.yaml")
+	fmt.Println("File1111111\n\n")
 	if err != nil {
 		log.Fatal("Failed to initialize config", zap.Error(err))
 	}
+	fmt.Println("File12222222\n\n")
 	defer func(file *os.File) {
 		err := file.Close()
 		if err != nil {
 
 		}
 	}(file)
-
+	fmt.Println("File33333333\n\n")
 	var config Config
 	decoder := yaml.NewDecoder(file)
+	fmt.Println("File444444\n\n")
 	if err := decoder.Decode(&config); err != nil {
 		log.Fatal("Decode file config error:", zap.Error(err))
 	}

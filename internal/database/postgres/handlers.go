@@ -7,7 +7,7 @@ import (
 )
 
 type PersonWrapper struct {
-	Person models.Person
+	Person *models.Person
 }
 
 func GetAllPersons() ([]models.Person, error) {
@@ -33,7 +33,7 @@ func GetPerson(id uint) (*models.Person, error) {
 	return &person, nil
 }
 
-func CheckPersonByID(id int) (bool, error) {
+func CheckPersonByID(id uint) (bool, error) {
 	var person models.Person
 	err := db.Select("id").Where("id = ? AND deleted_on = ? ", id, 0).First(&person).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
@@ -66,4 +66,8 @@ func (person *PersonWrapper) UpdatePerson() error {
 	}
 
 	return nil
+}
+func (w *PersonWrapper) DeletePerson() error {
+	result := db.Delete(&models.Person{}, w.Person.ID)
+	return result.Error
 }
