@@ -2,7 +2,6 @@ package config
 
 import (
 	"WST_lab4_server/internal/models"
-	"fmt"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v3"
 	"log"
@@ -22,8 +21,6 @@ type GeneralServerConfig struct {
 	DataSet  []models.Person `yaml:"persons"`
 }
 
-var GeneralServerSetting = &GeneralServerConfig{}
-
 // HTTPServerConfig contains the configuration for starting the server
 type HTTPServerConfig struct {
 	RunMode      string        `yaml:"runMode"`
@@ -31,8 +28,6 @@ type HTTPServerConfig struct {
 	ReadTimeout  time.Duration `yaml:"readTimeout"`
 	WriteTimeout time.Duration `yaml:"writeTimeout"`
 }
-
-var HTTPServerSetting = &HTTPServerConfig{}
 
 // DatabaseConfig contains the configuration for connecting to the database
 type DatabaseConfig struct {
@@ -44,25 +39,31 @@ type DatabaseConfig struct {
 	SSLMode  string `yaml:"sslMode"`
 }
 
-var DatabaseSetting = &DatabaseConfig{}
+var (
+	config               Config
+	GeneralServerSetting = &GeneralServerConfig{}
+	HTTPServerSetting    = &HTTPServerConfig{}
+	DatabaseSetting      = &DatabaseConfig{}
+)
 
 // Init initializes the server configuration
 func Init() {
-	file, err := os.ReadFile("config/note.yaml")
+	file, err := os.Open("config/note.yaml")
 	if err != nil {
-		log.Fatal("Failed to initialize config", zap.Error(err))
+		log.Fatal("error opening file config", zap.Error(err))
 	}
-	var config Config
-	err = yaml.Unmarshal(file, &config)
-	if err != nil {
-		log.Fatal("Decode file config error:", zap.Error(err))
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+			log.Fatal("error closing file config", zap.Error(err))
+		}
+	}(file)
+	decoder := yaml.NewDecoder(file)
+	if err := decoder.Decode(&config); err != nil {
+		log.Fatal("error decoding file config", zap.Error(err))
 	}
-	fmt.Printf("Server Host: %s\n", config.Database.Host)
-	//fmt.Println("TTTTTTTTTTTTTTTTTTTTT", &DatabaseSetting)
-	fmt.Printf("Server Port: %d\n", config.Database.Port)
-	fmt.Printf("Database User: %s\n", config.Database.User)
-	fmt.Printf("Database Name: %s\n", config.Database.Name)
-	fmt.Printf("Database Password: %s\n", config.Database.Password)
-	fmt.Printf("Database SSL Mode: %s\n", config.Database.SSLMode)
+	*GeneralServerSetting = config.GeneralServer
+	*HTTPServerSetting = config.HTTPServer
+	*DatabaseSetting = config.Database
 
 }

@@ -9,12 +9,12 @@ import (
 )
 
 func GetAllPersonsHandler(context *gin.Context) {
-	events, err := postgres.GetAllPersons()
+	persons, err := postgres.GetAllPersons()
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not fetch persons. Try again later."})
 		return
 	}
-	context.JSON(http.StatusOK, events)
+	context.JSON(http.StatusOK, persons)
 }
 func GetPersonHandler(context *gin.Context) {
 	personId, err := strconv.ParseUint(context.Param("id"), 10, 64)

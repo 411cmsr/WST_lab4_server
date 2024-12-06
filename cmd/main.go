@@ -2,7 +2,7 @@ package main
 
 import (
 	"WST_lab4_server/config"
-	//"WST_lab4_server/config"
+
 	"WST_lab4_server/internal/database/postgres"
 	"WST_lab4_server/internal/httpserver/routes"
 	"fmt"
@@ -10,7 +10,6 @@ import (
 	//"WST_lab4_server/internal/services"
 	//"flag"
 	//"fmt"
-	//"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -21,6 +20,7 @@ func main() {
 
 	routes.Init(httpServer)
 
+	httpServer.StaticFile("/favicon.ico", "./favicon.ico")
 	err := httpServer.Run(":8088")
 	if err != nil {
 		fmt.Println(err)
