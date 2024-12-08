@@ -1,14 +1,7 @@
-log_level: "debug"
-database:
-  host: 192.168.253.229
-  user: postgres
-  password: postgres
-  name: wstbd
-  port: 5432
-  sslmode: disable
-httpserver:
-  bind_addr: ":8089"
-persons:
+generalServer:
+  env: "pc"
+  logLevel: "debug" # debug, info, warn, error, fatal
+  persons:
   - name: "Петр"
     surname: "Петров"
     age: 25
@@ -64,3 +57,15 @@ persons:
     age: 35
     email: leo@mail.com
     telephone: +70011234577
+database:
+  host: 192.168.253.229
+  user: postgres
+  password: postgres
+  name: wstbd
+  port: 5432
+  sslmode: disable    
+httpserver:
+  runMode: "debug"
+  bindAddr: ":8095"
+  readTimeout: 90
+  writeTimeout: 90

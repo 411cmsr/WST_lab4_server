@@ -1,15 +1,9 @@
 package models
 
-import (
-	"github.com/gin-gonic/gin"
-)
-
-type Gin struct {
-	Ctx *gin.Context
-}
-
-type Response struct {
-	Code int         `json:"code"`
-	Msg  string      `json:"msg"`
-	Data interface{} `json:"data"`
+type ErrorResponse struct {
+    Type     string `json:"type"`
+    Title    string `json:"title"`
+    Status   int    `json:"status"`
+    Detail   string `json:"detail"`
+    Instance string `json:"instance"`
 }

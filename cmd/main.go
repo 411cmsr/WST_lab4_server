@@ -7,14 +7,10 @@ import (
 	"WST_lab4_server/internal/httpserver/routes"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	//"WST_lab4_server/internal/services"
-	//"flag"
-	//"fmt"
 )
 
 func main() {
 	config.Init()
-
 	postgres.Init()
 	httpServer := gin.Default()
 

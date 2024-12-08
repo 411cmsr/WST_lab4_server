@@ -2,26 +2,28 @@ package config
 
 import (
 	"WST_lab4_server/internal/models"
-	"go.uber.org/zap"
-	"gopkg.in/yaml.v3"
+	"fmt"
 	"log"
 	"os"
 	"time"
-)
 
+	"go.uber.org/zap"
+	"gopkg.in/yaml.v3"
+)
+//Структура конфигурации
 type Config struct {
 	GeneralServer GeneralServerConfig `yaml:"generalServer"`
 	HTTPServer    HTTPServerConfig    `yaml:"httpServer"`
 	Database      DatabaseConfig      `yaml:"database"`
 }
-
+//Структура конфигурации сервера
 type GeneralServerConfig struct {
 	Env      string          `yaml:"env" env-required:"true"`
 	LogLevel string          `yaml:"logLevel" env-default:"debug"`
 	DataSet  []models.Person `yaml:"persons"`
 }
 
-// HTTPServerConfig contains the configuration for starting the server
+//Структура конфигурации HTTP сервера
 type HTTPServerConfig struct {
 	RunMode      string        `yaml:"runMode"`
 	BindAddr     string        `yaml:"bindAddr"`
@@ -29,7 +31,7 @@ type HTTPServerConfig struct {
 	WriteTimeout time.Duration `yaml:"writeTimeout"`
 }
 
-// DatabaseConfig contains the configuration for connecting to the database
+//Структура конфигурации подключения к базе данных
 type DatabaseConfig struct {
 	Host     string `yaml:"host"`
 	User     string `yaml:"user"`
@@ -38,7 +40,7 @@ type DatabaseConfig struct {
 	Port     int    `yaml:"port"`
 	SSLMode  string `yaml:"sslMode"`
 }
-
+//Переменные конфигурации 
 var (
 	config               Config
 	GeneralServerSetting = &GeneralServerConfig{}
@@ -46,9 +48,21 @@ var (
 	DatabaseSetting      = &DatabaseConfig{}
 )
 
-// Init initializes the server configuration
+//Функция инициализации конфигурации
 func Init() {
-	file, err := os.Open("config/note.yaml")
+	var pathConfigFile string
+	hostname, err := os.Hostname()
+	if err != nil {
+		fmt.Println(err)
+	}
+    //Проверяем hostname для загрузки нужной конфигурации
+	if hostname == "test" {
+		pathConfigFile = "config/vm.yaml"
+	} else {
+		pathConfigFile = "config/pc.yaml"
+	}
+	//Открываем файл конфигурации
+	file, err := os.Open(pathConfigFile)
 	if err != nil {
 		log.Fatal("error opening file config", zap.Error(err))
 	}
@@ -58,7 +72,9 @@ func Init() {
 			log.Fatal("error closing file config", zap.Error(err))
 		}
 	}(file)
+	//Читаем файл конфигурации
 	decoder := yaml.NewDecoder(file)
+	//Привязываем переменные конфигурации
 	if err := decoder.Decode(&config); err != nil {
 		log.Fatal("error decoding file config", zap.Error(err))
 	}

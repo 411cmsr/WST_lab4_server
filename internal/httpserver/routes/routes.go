@@ -1,21 +1,30 @@
 package routes
 
 import (
+	"WST_lab4_server/internal/database/postgres"
 	"WST_lab4_server/internal/handlers"
+	"WST_lab4_server/internal/middleware"
 	"github.com/gin-gonic/gin"
 )
 
 func Init(httpserver *gin.Engine) {
-	//router := gin.New()
+	//middleware для обработки ошибок
+	httpserver.Use(middleware.ErrorHandler())
+	//Восстановление после паники
 	httpserver.Use(gin.Recovery())
+	//Логгирование 
 	httpserver.Use(gin.Logger())
-
+	//Подключение к БД
+	db := postgres.Init()
+	storage := &postgres.Storage{DB: db}
+	route := &handlers.StorageHandler{Storage: storage}
+	//routes по запросам
 	apiv1 := httpserver.Group("/api/v1")
-	//apiv1.GET("/persons", handlers.FindPerson)
-	apiv1.POST("/persons", handlers.AddPerson)
-	apiv1.GET("/persons/list", handlers.GetAllPersonsHandler)
-	apiv1.GET("/person/:id", handlers.GetPersonHandler)
-	apiv1.PUT("/person/:id", handlers.UpdatePerson)
-	apiv1.DELETE("/person/:id", handlers.DeletePerson)
+	apiv1.GET("/persons", route.SearchPersonHandler)
+	apiv1.POST("/persons", route.AddPersonHandler)
+	apiv1.GET("/persons/list", route.GetAllPersonsHandler)
+	apiv1.GET("/person/:id", route.GetPersonHandler)
+	apiv1.PUT("/person/:id", route.UpdatePersonHandler)
+	apiv1.DELETE("/person/:id", route.DeletePersonHandler)
 
 }
