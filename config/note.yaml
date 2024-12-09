@@ -67,5 +67,6 @@ database:
 httpserver:
   runMode: "debug"
   bindAddr: ":8095"
-  readTimeout: 90
-  writeTimeout: 90
+  readTimeout: 10s
+  writeTimeout: 10s
+  connectTimeout: 3s

@@ -10,20 +10,22 @@ import (
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v3"
 )
-//Структура конфигурации
+
+// Структура конфигурации
 type Config struct {
 	GeneralServer GeneralServerConfig `yaml:"generalServer"`
 	HTTPServer    HTTPServerConfig    `yaml:"httpServer"`
 	Database      DatabaseConfig      `yaml:"database"`
 }
-//Структура конфигурации сервера
+
+// Структура конфигурации сервера
 type GeneralServerConfig struct {
 	Env      string          `yaml:"env" env-required:"true"`
 	LogLevel string          `yaml:"logLevel" env-default:"debug"`
 	DataSet  []models.Person `yaml:"persons"`
 }
 
-//Структура конфигурации HTTP сервера
+// Структура конфигурации HTTP сервера
 type HTTPServerConfig struct {
 	RunMode      string        `yaml:"runMode"`
 	BindAddr     string        `yaml:"bindAddr"`
@@ -31,7 +33,7 @@ type HTTPServerConfig struct {
 	WriteTimeout time.Duration `yaml:"writeTimeout"`
 }
 
-//Структура конфигурации подключения к базе данных
+// Структура конфигурации подключения к базе данных
 type DatabaseConfig struct {
 	Host     string `yaml:"host"`
 	User     string `yaml:"user"`
@@ -40,7 +42,8 @@ type DatabaseConfig struct {
 	Port     int    `yaml:"port"`
 	SSLMode  string `yaml:"sslMode"`
 }
-//Переменные конфигурации 
+
+// Переменные конфигурации
 var (
 	config               Config
 	GeneralServerSetting = &GeneralServerConfig{}
@@ -48,15 +51,15 @@ var (
 	DatabaseSetting      = &DatabaseConfig{}
 )
 
-//Функция инициализации конфигурации
+// Функция инициализации конфигурации
 func Init() {
 	var pathConfigFile string
 	hostname, err := os.Hostname()
 	if err != nil {
 		fmt.Println(err)
 	}
-    //Проверяем hostname для загрузки нужной конфигурации
-	if hostname == "test" {
+	//Проверяем hostname для загрузки нужной конфигурации
+	if hostname == "test-XWPC" {
 		pathConfigFile = "config/vm.yaml"
 	} else {
 		pathConfigFile = "config/pc.yaml"

@@ -57,6 +57,13 @@ func (sh *StorageHandler) SearchPersonHandler(context *gin.Context) {
 		context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not retrieve persons."})
 		return
 	}
+	if len(persons) == 0 {
+		context.JSON(http.StatusNotFound, gin.H{
+			"code":    "not_found",
+			"message": fmt.Sprintf("Person for '%s' requestwas not found.", searchString),
+		})
+		return
+	}
 	//Возвращаем статус ОК (200) и результат поиска (массив)
 	context.JSON(http.StatusOK, persons)
 }
@@ -186,17 +193,17 @@ func (sh *StorageHandler) UpdatePersonHandler(context *gin.Context) {
 	//Присваиваем id обновляемой записи в структуре
 	updatedPerson.ID = uint(personId)
 	//Проверяем уникальность email с исключением текущего ID
-    if updatedPerson.Email != "" {
-        if _, err := sh.Storage.CheckPersonByEmail(updatedPerson.Email, updatedPerson.ID); err == nil {
-            context.JSON(http.StatusConflict, gin.H{"message": "Email already in use."})
-            return
-        }
-        //Проверяем формат email
-        if !validateEmail(updatedPerson.Email) {
-            context.JSON(http.StatusBadRequest, gin.H{"message": "Invalid email format."})
-            return
-        }
-    }
+	if updatedPerson.Email != "" {
+		if _, err := sh.Storage.CheckPersonByEmail(updatedPerson.Email, updatedPerson.ID); err == nil {
+			context.JSON(http.StatusConflict, gin.H{"message": "Email already in use."})
+			return
+		}
+		//Проверяем формат email
+		if !validateEmail(updatedPerson.Email) {
+			context.JSON(http.StatusBadRequest, gin.H{"message": "Invalid email format."})
+			return
+		}
+	}
 
 	// Проверяем, были ли указаны поля для обновления
 	if updatedPerson.Name == "" &&

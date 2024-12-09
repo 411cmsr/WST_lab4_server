@@ -17,7 +17,7 @@ func main() {
 	routes.Init(httpServer)
 
 	httpServer.StaticFile("/favicon.ico", "./favicon.ico")
-	err := httpServer.Run(":8088")
+	err := httpServer.Run(":8095")
 	if err != nil {
 		fmt.Println(err)
 		return
