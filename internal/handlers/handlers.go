@@ -11,7 +11,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
+	
 )
 
 /*
@@ -60,7 +60,7 @@ func (sh *StorageHandler) SearchPersonHandler(context *gin.Context) {
 	if len(persons) == 0 {
 		context.JSON(http.StatusNotFound, gin.H{
 			"code":    "not_found",
-			"message": fmt.Sprintf("Person for '%s' requestwas not found.", searchString),
+			"message": fmt.Sprintf("Person for '%s' request was not found.", searchString),
 		})
 		return
 	}
@@ -100,11 +100,12 @@ func (sh *StorageHandler) GetPersonHandler(context *gin.Context) {
 	person, err := sh.Storage.GetPerson(uint(personId))
 	if err != nil {
 		//При ошибке, проверяем тип ошибки
-		if errors.Is(err, gorm.ErrRecordNotFound) {
+		if errors.Is(err, database.ErrPersonNotFound) {
 			//Если запись не найдена, возвращаем статус  Not Found (404) и сообщение об ошибке
 			context.JSON(http.StatusNotFound, gin.H{"message": "Person not found."})
 			return
 		}
+		fmt.Println(err)
 		//Если другая ошибка, возвращаем статус Internal Server Error (500) и сообщение об ошибке
 		context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not fetch person."})
 		return
@@ -147,7 +148,7 @@ func (sh *StorageHandler) AddPersonHandler(context *gin.Context) {
 	if !validatePhone(newPerson.Telephone) {
 		context.Error(gin.Error{
 			Type: gin.ErrorTypePublic,
-			Err:  fmt.Errorf("invalid phone number format"),
+			Err:  fmt.Errorf("invalid phone number format (+70011234568)"),
 		})
 		return
 	}
@@ -290,16 +291,17 @@ func (sh *StorageHandler) DeletePersonHandler(context *gin.Context) {
 	}
 	//Проверяем наличие записи с этим id в базе данных
 	person, err := sh.Storage.GetPerson(uint(personId))
-	if err != nil {
-		//При ошибке возвращаем статус Internal Server Error (500) и сообщение об ошибке
-		context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not fetch the person ."})
-		return
-	}
 	if person == nil {
 		//Если запись не найдена, возвращаем статус Not Found (404) и сообщение об ошибке
 		context.JSON(http.StatusNotFound, gin.H{"message": "Person not found."})
 		return
 	}
+	if err != nil {
+		//При ошибке возвращаем статус Internal Server Error (5) и сообщение об ошибке
+		context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not fetch the person ."})
+		return
+	}
+	
 	//Удаляем запись из базы данных
 	err = sh.Storage.DeletePerson(&models.Person{ID: uint(personId)})
 	if err != nil {

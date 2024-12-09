@@ -16,21 +16,22 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
+
 /*
 
-*/
+ */
 
 type Storage struct {
 	DB *gorm.DB
 }
 
 /*
-Инициализация 
+Инициализация
 */
 func Init() *gorm.DB {
 	logging.InitializeLogger()
 	var err error
-	//Уровень логирования из файла конфигурации 
+	//Уровень логирования из файла конфигурации
 	var logLevel logger.LogLevel
 	switch config.GeneralServerSetting.LogLevel {
 	case "fatal":
@@ -52,14 +53,14 @@ func Init() *gorm.DB {
 		config.DatabaseSetting.Name,
 		config.DatabaseSetting.Port,
 		config.DatabaseSetting.SSLMode)
-    //Подключаемся к базе данных
+	//Подключаемся к базе данных
 	conn, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		Logger: logger.Default.LogMode(logLevel),
 	})
 	if err != nil {
 		log.Fatalf("error connecting to database: %v", err)
 	}
-    //Выводим при удачном подключении
+	//Выводим при удачном подключении
 	logging.Logger.Info("Database connection established successfully.")
 	//Миграция базы данных
 	db := conn
@@ -78,7 +79,7 @@ func Init() *gorm.DB {
 	//Выводим при удачном заполнениитаблицы
 	logging.Logger.Info("Database updated successfully.")
 	/*
-	//Debug: Запрос к базе и вывод всех данных
+		//Debug: Запрос к базе и вывод всех данных
 	*/
 	var results []models.Person
 	if err := db.Find(&results).Error; err != nil {
@@ -90,55 +91,55 @@ func Init() *gorm.DB {
 	}
 	fmt.Println("database content in quantity:", len(results), "\n id max:", results[len(results)-1].ID, "id min:", results[0].ID)
 	/*
-	----
+		----
 	*/
 	//Возвращаем указатель на базу данных
 	return db
 }
 
-/* 
+/*
 //
 Метод поиска в базе данных по запросу
 //
 */
 func (s *Storage) SearchPerson(searchString string) ([]models.Person, error) {
-    var persons []models.Person
-    query := s.DB.Model(&models.Person{})
+	var persons []models.Person
+	query := s.DB.Model(&models.Person{})
 	//Удаляем пробелы из строки поиска
-    searchString = strings.TrimSpace(searchString)
- 	// Проверяем строка является числом, если число ищем по возрасту
+	searchString = strings.TrimSpace(searchString)
+	// Проверяем строка является числом, если число ищем по возрасту
 	if age, err := strconv.Atoi(searchString); err == nil {
-        query = query.Where("age = ?", age)
-    } else {
+		query = query.Where("age = ?", age)
+	} else {
 		//Если строка не может быть конвертирована в число ищем по строковым полям
-        query = query.Where("name LIKE ? OR surname LIKE ? OR email LIKE ? OR telephone LIKE ?", 
-        "%"+searchString+"%", "%"+searchString+"%", "%"+searchString+"%", "%"+searchString+"%")
-    }
+		query = query.Where("name LIKE ? OR surname LIKE ? OR email LIKE ? OR telephone LIKE ?",
+			"%"+searchString+"%", "%"+searchString+"%", "%"+searchString+"%", "%"+searchString+"%")
+	}
 	//Выполняем запрос и сохраняем результат в структуру
-    if err := query.Find(&persons).Error; err != nil {
-        return nil, err 
-    }
+	if err := query.Find(&persons).Error; err != nil {
+		return nil, err
+	}
 	//Возвращаем результат
-    return persons, nil
+	return persons, nil
 }
 
-/* 
+/*
 Метод добавления новых данных
 */
-func (s *Storage) AddPerson(person *models.Person) (uint,error) {
+func (s *Storage) AddPerson(person *models.Person) (uint, error) {
 	//Проверяем наличие записи с таким же email
 	if _, err := s.CheckPersonByEmail(person.Email, 0); err == nil {
 		return 0, database.ErrEmailExists
 	}
 	//Создаем запись в базе данных
 	if err := s.DB.Create(person).Error; err != nil {
-		return 0, err 
+		return 0, err
 	}
 	return person.ID, nil
 }
 
-/* 
-Метод получения данных 
+/*
+Метод получения данных
 */
 func (s *Storage) GetPerson(id uint) (*models.Person, error) {
 	var person models.Person
@@ -147,7 +148,7 @@ func (s *Storage) GetPerson(id uint) (*models.Person, error) {
 	if err != nil {
 		//Возвращаем ошибку при выполнении запроса к базе данных
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil
+			return nil, database.ErrPersonNotFound
 		}
 		return nil, err
 	}
@@ -155,33 +156,33 @@ func (s *Storage) GetPerson(id uint) (*models.Person, error) {
 	return &person, nil
 }
 
-/* 
+/*
 Метод обновления данных по id
 */
 func (s *Storage) UpdatePerson(person *models.Person) error {
-   //Выполняем запрос к базе данных для обновления записи
+	//Выполняем запрос к базе данных для обновления записи
 	result := s.DB.Model(&models.Person{}).Where("id = ?", person.ID).Updates(models.Person{
-        Name:      person.Name,
-        Surname:   person.Surname,
-        Age:       person.Age,
-        Email:     person.Email,
-        Telephone: person.Telephone,
-    })
+		Name:      person.Name,
+		Surname:   person.Surname,
+		Age:       person.Age,
+		Email:     person.Email,
+		Telephone: person.Telephone,
+	})
 
-    if result.Error != nil {
+	if result.Error != nil {
 		//Возвращаем ошибку при выполнении запроса к базе данных
-        return result.Error
-    }
-    
-    if result.RowsAffected == 0 {
+		return result.Error
+	}
+
+	if result.RowsAffected == 0 {
 		//Возвращаем ошибку если запись не найдена для обновления
-        return database.ErrPersonNotFound
-    }
-    //Возвращаем ничего при успехе
-    return nil
+		return database.ErrPersonNotFound
+	}
+	//Возвращаем ничего при успехе
+	return nil
 }
 
-/* 
+/*
 Метод удаления данных по id
 */
 func (s *Storage) DeletePerson(person *models.Person) error {
@@ -189,13 +190,13 @@ func (s *Storage) DeletePerson(person *models.Person) error {
 	result := s.DB.Delete(&person)
 	if result.Error != nil {
 		//Возвращаем ошибку при выполнении запроса к базе данных
-        return result.Error
-    }
+		return result.Error
+	}
 	//Возвращаем ошибку при выполнении запроса к базе данных
 	return result.Error
 }
 
-/* 
+/*
 Метод получения всех данных
 */
 func (s *Storage) GetAllPersons() ([]models.Person, error) {
@@ -209,25 +210,25 @@ func (s *Storage) GetAllPersons() ([]models.Person, error) {
 	return persons, nil
 }
 
-/* 
+/*
 Метод проверки наличия записи по email
 */
 func (s *Storage) CheckPersonByEmail(email string, excludeId uint) (*models.Person, error) {
-    var person models.Person
-    // Выполняем запрос к базе данных для поиска по email
- 	if err := s.DB.Where("email = ? AND id != ?", email, excludeId).First(&person).Error; err != nil {
-        if errors.Is(err, gorm.ErrRecordNotFound) {
+	var person models.Person
+	// Выполняем запрос к базе данных для поиска по email
+	if err := s.DB.Where("email = ? AND id != ?", email, excludeId).First(&person).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			//Возвращаем кастомную ошибку (Запись не найдена)
-            return nil, database.ErrPersonNotFound 
-        }
+			return nil, database.ErrPersonNotFound
+		}
 		//Возвращаем ошибку
-        return nil, err 
-    }
-    //Возвращаем запись
-    return &person, nil
+		return nil, err
+	}
+	//Возвращаем запись
+	return &person, nil
 }
 
-/* 
+/*
 Метод проверки наличия записи по id
 */
 func (s *Storage) CheckPersonByIDHandler(id uint) (bool, error) {
