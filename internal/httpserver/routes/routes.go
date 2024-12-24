@@ -21,10 +21,10 @@ func Init(httpserver *gin.Engine) {
 	//routes по запросам
 	apiv1 := httpserver.Group("/api/v1")
 	apiv1.GET("/persons", route.SearchPersonHandler)
-	apiv1.POST("/persons", route.AddPersonHandler)
+	apiv1.POST("/persons", middleware.BasicAuthMiddleware(), route.AddPersonHandler)
 	apiv1.GET("/persons/list", route.GetAllPersonsHandler)
 	apiv1.GET("/person/:id", route.GetPersonHandler)
-	apiv1.PUT("/person/:id", route.UpdatePersonHandler)
-	apiv1.DELETE("/person/:id", route.DeletePersonHandler)
+	apiv1.PUT("/person/:id",middleware.BasicAuthMiddleware(), route.UpdatePersonHandler)
+	apiv1.DELETE("/person/:id", middleware.BasicAuthMiddleware(), route.DeletePersonHandler)
 
 }
